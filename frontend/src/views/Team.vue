@@ -1,4 +1,8 @@
 <script setup>
+function openWebsite(url) {
+  if (url) window.open(url, '_blank', 'noopener noreferrer')
+}
+
 const teamMembers = [
   {
     name: 'IRANZI SANGWA Arnaud',
@@ -77,32 +81,20 @@ const stats = [
           <div
             v-for="(member, idx) in teamMembers"
             :key="member.name"
+            @click="openWebsite(member.website)"
+            :class="[`animate-fade-in-up stagger-${idx + 1}`, member.website ? 'cursor-pointer' : 'cursor-default']"
             class="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center dark:bg-gray-900 dark:border-gray-700 dark:hover:shadow-primary-900/20"
-            :class="`animate-fade-in-up stagger-${idx + 1}`"
           >
             <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300" :class="member.color">
               <span class="text-2xl font-bold text-white">{{ member.initials }}</span>
             </div>
-            <h3 class="text-lg font-bold text-gray-900 mb-0.5">{{ member.name }}</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-0.5">{{ member.name }}</h3>
             <p class="text-sm font-medium text-primary-600 mb-3">{{ member.role }}</p>
-            <p class="text-sm text-gray-500 leading-relaxed mb-4">{{ member.description }}</p>
-            <div class="flex justify-center gap-2">
-              <a v-if="member.website" :href="member.website" target="_blank" rel="noopener noreferrer" class="w-8 h-8 bg-gray-100 hover:bg-primary-100 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors dark:bg-gray-700 dark:hover:bg-primary-900/30 dark:text-gray-500 dark:hover:text-primary-400" title="Website">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-              </a>
-              <a href="#" class="w-8 h-8 bg-gray-100 hover:bg-primary-100 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors dark:bg-gray-700 dark:hover:bg-primary-900/30 dark:text-gray-500 dark:hover:text-primary-400">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
-              </a>
-              <a href="#" class="w-8 h-8 bg-gray-100 hover:bg-primary-100 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              </a>
-              <a href="#" class="w-8 h-8 bg-gray-100 hover:bg-primary-100 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
-              </a>
-              <a href="#" class="w-8 h-8 bg-gray-100 hover:bg-primary-100 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary-600 transition-colors">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zM4 6a2 2 0 100-4 2 2 0 000 4z"/></svg>
-              </a>
-            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{{ member.description }}</p>
+            <span v-if="member.website" class="inline-flex items-center gap-1 mt-4 text-xs font-medium text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              View Portfolio
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17l9-9M7 7h9v9"/></svg>
+            </span>
           </div>
         </div>
       </div>
