@@ -40,6 +40,7 @@ const teamMembers = [
     initials: 'GL',
     color: 'from-rose-500 to-pink-600',
     description: 'Data-driven engineer specializing in AI integration and data pipelines that power personalized career recommendations and insights.',
+    website: 'https://portfoliointern.vercel.app/',
   },
 ]
 
