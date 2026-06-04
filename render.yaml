@@ -12,9 +12,9 @@ services:
       - key: OPENAI_API_KEY
         sync: false
 
-  - type: static
+  - type: web
     name: mycareer-frontend
-    runtime: node
+    runtime: static
     rootDir: frontend
     buildCommand: npm run build
     staticPublishPath: ./dist
