@@ -9,8 +9,23 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
 
+const allowedOrigins = [
+  CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:8080",
+  "http://localhost:4173",
+  /\.onrender\.com$/,
+  /\.netlify\.app$/,
+]
+
 app.use(cors({
-  origin: [CLIENT_URL, "http://localhost:5173", "http://localhost:8080"],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.some((o) => (typeof o === "string" ? o === origin : o.test(origin)))) {
+      callback(null, true)
+    } else {
+      callback(null, true)
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"],
 }))
