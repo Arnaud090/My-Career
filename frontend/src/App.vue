@@ -1,7 +1,11 @@
 <script setup>
-import { ref, watch, onMounted, provide } from 'vue'
+import { ref, watch, onMounted, provide, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+
+const route = useRoute()
+const isDashboard = computed(() => route.path === '/dashboard')
 
 const isDark = ref(false)
 
@@ -32,10 +36,10 @@ provide('toggleDark', toggleDark)
 
 <template>
   <div class="min-h-screen bg-white flex flex-col">
-    <Navbar />
+    <Navbar v-if="!isDashboard" />
     <main class="flex-1">
       <router-view />
     </main>
-    <Footer />
+    <Footer v-if="!isDashboard" />
   </div>
 </template>
