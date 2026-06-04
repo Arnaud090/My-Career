@@ -230,11 +230,13 @@ onMounted(() => {
     <div v-if="!unlocked" class="max-w-md mx-auto mt-20 px-4">
       <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
         <div class="text-center mb-6">
-          <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-200">
+            <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 21V9l8-5 8 5v12"/><path d="M4 21h16"/><path d="M12 21v-8"/><path d="M8 13h8"/><path d="M10 9l2-2 2 2"/>
+            </svg>
           </div>
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white">Admin Access</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Select your name and enter your password.</p>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Select your name and enter your password to continue.</p>
         </div>
         <div v-if="showMemberSelect">
           <form @submit.prevent="selectMember" class="space-y-4">
@@ -268,23 +270,27 @@ onMounted(() => {
       <div v-if="sidebarOpen" class="fixed inset-0 bg-black/40 z-40 lg:hidden" @click="sidebarOpen = false"></div>
 
       <!-- Sidebar -->
-      <aside class="fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-64 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 lg:translate-x-0"
+      <aside class="fixed lg:sticky top-0 left-0 z-50 lg:z-30 w-80 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 lg:translate-x-0 flex flex-col"
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
-        <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-md">
-              <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center shadow-md">
+              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 21V9l8-5 8 5v12"/><path d="M4 21h16"/><path d="M12 21v-8"/><path d="M8 13h8"/><path d="M10 9l2-2 2 2"/>
               </svg>
             </div>
-            <span class="text-lg font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent">Admin</span>
+            <div>
+              <span class="text-base font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent">MyCareer</span>
+              <p class="text-xs text-gray-400 -mt-0.5">Admin Panel</p>
+            </div>
           </div>
           <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
 
-        <nav class="p-3 space-y-0.5 overflow-y-auto max-h-[calc(100vh-65px)]">
+        <nav class="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
+          <p v-if="isSuperAdmin" class="px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Management</p>
           <button v-for="item in sidebarItems" :key="item.id" @click="item.id === 'logout' ? logout() : navigateTo(item.id)"
             class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-150"
             :class="item.id === 'logout'
@@ -299,13 +305,13 @@ onMounted(() => {
           </button>
         </nav>
 
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div class="px-4 py-4 border-t border-gray-100 dark:border-gray-800 shrink-0">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
               {{ currentUser?.name?.split(' ').map(w => w[0]).slice(0, 2).join('') }}
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-semibold text-gray-900 dark:text-white truncate">{{ currentUser?.name }}</p>
+              <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ currentUser?.name }}</p>
               <p class="text-xs text-gray-400 truncate">{{ isSuperAdmin ? 'Super Admin' : 'Team Member' }}</p>
             </div>
           </div>
