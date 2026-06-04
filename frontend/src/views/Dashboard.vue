@@ -232,7 +232,7 @@ onMounted(() => {
       style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1a365d 100%);">
       <div class="w-full max-w-md">
         <div class="text-center mb-6">
-          <router-link to="/" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors mb-6">
+          <router-link to="/" class="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors mb-6">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             Back to Home
           </router-link>
