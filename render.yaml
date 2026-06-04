@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: mycareer-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: "5000"
+      - key: CLIENT_URL
+        value: https://mycareer-00.netlify.app
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: static
+    name: mycareer-frontend
+    runtime: node
+    rootDir: frontend
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://mycareer-api.onrender.com/api
