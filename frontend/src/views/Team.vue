@@ -33,6 +33,7 @@ const teamMembers = [
     initials: 'AB',
     color: 'from-amber-500 to-orange-600',
     description: 'Creative designer dedicated to crafting beautiful, accessible interfaces that make career discovery intuitive and engaging for every user.',
+    website: 'https://amb-dev.netlify.app',
   },
   {
     name: 'Gakuba Landry',
