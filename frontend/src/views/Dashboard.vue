@@ -107,6 +107,7 @@ const isSuperAdmin = computed(() => currentUser.value?.role === 'superadmin')
 function navigateTo(section) {
   activeSection.value = section; sidebarOpen.value = false
   if (section === 'addcareer') openAddForm()
+  if (section === 'careers' && careers.value.length === 0) fetchCareers()
 }
 
 function notify(type, message) {
