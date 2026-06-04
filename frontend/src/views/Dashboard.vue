@@ -47,6 +47,21 @@ const inputFields = ref({
 const formSaving = ref(false)
 const notification = reactive({ show: false, type: '', message: '' })
 
+const PASSWORD = '1987000'
+const passwordInput = ref('')
+const passwordError = ref(false)
+const unlocked = ref(false)
+
+function checkPassword() {
+  if (passwordInput.value === PASSWORD) {
+    unlocked.value = true
+    passwordError.value = false
+    fetchCareers()
+  } else {
+    passwordError.value = true
+  }
+}
+
 function notify(type, message) {
   notification.show = true
   notification.type = type
@@ -171,12 +186,42 @@ function confirmDelete(id, name) {
   }
 }
 
-onMounted(fetchCareers)
+onMounted(() => {})
 </script>
 
 <template>
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
+      <div v-if="!unlocked" class="max-w-md mx-auto mt-20">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm text-center">
+          <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Dashboard Access</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Enter the team password to manage careers.</p>
+          <form @submit.prevent="checkPassword" class="space-y-4">
+            <input
+              v-model="passwordInput"
+              type="password"
+              placeholder="Enter password"
+              class="w-full px-4 py-3 text-sm bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all text-center"
+              :class="passwordError ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-primary-400 focus:ring-primary-100'"
+            />
+            <p v-if="passwordError" class="text-xs text-red-500 -mt-2">Incorrect password. Try again.</p>
+            <button
+              type="submit"
+              class="w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all"
+            >
+              Unlock Dashboard
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div v-else>
 
       <div v-if="notification.show" class="fixed top-4 right-4 z-[100] animate-slide-in-right">
         <div
@@ -493,6 +538,7 @@ onMounted(fetchCareers)
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>

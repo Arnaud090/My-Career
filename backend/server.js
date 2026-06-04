@@ -3,7 +3,7 @@ const cors = require("cors")
 const dotenv = require("dotenv")
 const careerRoutes = require("./routes/careerRoutes")
 
-dotenv.config()
+dotenv.config({ path: require("path").join(__dirname, ".env") })
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -37,7 +37,11 @@ app.use((req, res) => {
   })
 })
 
-app.listen(PORT, () => {
-  console.log(`MyCareer API server running on http://localhost:${PORT}`)
-  console.log(`Accepting requests from: ${CLIENT_URL}`)
-})
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`MyCareer API server running on http://localhost:${PORT}`)
+    console.log(`Accepting requests from: ${CLIENT_URL}`)
+  })
+}
+
+module.exports = app

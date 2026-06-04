@@ -15,7 +15,6 @@ const navLinks = [
   { path: '/', label: 'Home' },
   { path: '/search', label: 'Career Search' },
   { path: '/assistant', label: 'AI Assistant' },
-  { path: '/dashboard', label: 'Dashboard' },
   { path: '/about', label: 'About' },
 ]
 
