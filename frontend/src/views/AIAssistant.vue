@@ -273,9 +273,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-[calc(100vh-64px)] bg-gradient-to-b from-primary-50/50 via-white to-white dark:from-gray-900/50 dark:via-gray-950 dark:to-gray-950">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
-      <div class="text-center mb-6">
+  <div class="min-h-screen bg-gradient-to-b from-primary-50/50 via-white to-white dark:from-gray-900/50 dark:via-gray-950 dark:to-gray-950 flex flex-col">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10 pb-0 flex-1 flex flex-col w-full">
+      <div class="text-center mb-6 shrink-0">
         <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2 dark:text-gray-100">
           AI Career
           <span class="bg-gradient-to-r from-primary-600 to-purple-500 bg-clip-text text-transparent">Counselor</span>
@@ -283,8 +283,8 @@ onMounted(() => {
         <p class="text-gray-500 dark:text-gray-400">Get personalized career guidance, study pathways, and professional advice</p>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden dark:bg-gray-900 dark:border-gray-700">
-        <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4 flex items-center gap-3">
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden dark:bg-gray-900 dark:border-gray-700 flex flex-col flex-1 mb-0">
+        <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4 flex items-center gap-3 shrink-0">
           <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
             <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -296,7 +296,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div ref="chatContainer" class="h-[520px] lg:h-[580px] overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-gray-800/50">
+        <div ref="chatContainer" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50 dark:bg-gray-800/50">
           <div v-for="msg in messages" :key="msg.id" class="animate-fade-in" :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
             <div v-if="msg.role === 'user'" class="flex items-start gap-3 max-w-[88%] lg:max-w-[75%] flex-row-reverse">
               <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">
@@ -361,7 +361,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="border-t border-gray-100 p-4 bg-white dark:border-gray-700 dark:bg-gray-900">
+        <div class="border-t border-gray-100 p-4 bg-white dark:border-gray-700 dark:bg-gray-900 shrink-0">
           <form @submit.prevent="sendMessage(input)" class="flex gap-3">
             <input
               v-model="input"
@@ -383,6 +383,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>

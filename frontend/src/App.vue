@@ -6,6 +6,7 @@ import Footer from './components/Footer.vue'
 
 const route = useRoute()
 const isDashboard = computed(() => route.path === '/dashboard')
+const isAssistant = computed(() => route.path === '/assistant')
 
 const isDark = ref(false)
 
@@ -40,6 +41,6 @@ provide('toggleDark', toggleDark)
     <main class="flex-1">
       <router-view />
     </main>
-    <Footer v-if="!isDashboard" />
+    <Footer v-if="!isDashboard && !isAssistant" />
   </div>
 </template>
