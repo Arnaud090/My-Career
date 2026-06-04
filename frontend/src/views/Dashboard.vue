@@ -3,12 +3,34 @@ import { ref, reactive, onMounted, computed } from 'vue'
 
 const API = import.meta.env.VITE_API_URL || '/api'
 
+const TEAM_MEMBERS = [
+  { name: 'IRANZI SANGWA Arnaud', password: 'admin123', role: 'superadmin' },
+  { name: 'Muganwa Elie', password: 'elie2024', role: 'member' },
+  { name: 'Shyaka Tresor', password: 'tresor2024', role: 'member' },
+  { name: 'Abakundanye Bruno', password: 'bruno2024', role: 'member' },
+  { name: 'Gakuba Landry', password: 'landry2024', role: 'member' },
+]
+
+const activities = ref(JSON.parse(localStorage.getItem('mycareer_activities') || '[]'))
+
+function logActivity(action) {
+  const entry = {
+    member: currentUser.value.name,
+    action,
+    timestamp: new Date().toISOString(),
+  }
+  activities.value.unshift(entry)
+  if (activities.value.length > 100) activities.value = activities.value.slice(0, 100)
+  localStorage.setItem('mycareer_activities', JSON.stringify(activities.value))
+}
+
 const careers = ref([])
 const loading = ref(false)
 const showForm = ref(false)
 const editingId = ref(null)
 const saving = ref(false)
 const deleting = ref(null)
+const showActivity = ref(false)
 
 const form = reactive({
   name: '',
@@ -47,20 +69,51 @@ const inputFields = ref({
 const formSaving = ref(false)
 const notification = reactive({ show: false, type: '', message: '' })
 
-const PASSWORD = '1987000'
+const currentUser = ref(null)
+const showMemberSelect = ref(true)
+const selectedMember = ref('')
 const passwordInput = ref('')
 const passwordError = ref(false)
 const unlocked = ref(false)
 
+function selectMember() {
+  if (selectedMember.value) {
+    showMemberSelect.value = false
+    passwordError.value = false
+  }
+}
+
 function checkPassword() {
-  if (passwordInput.value === PASSWORD) {
+  const member = TEAM_MEMBERS.find((m) => m.name === selectedMember.value)
+  if (member && passwordInput.value === member.password) {
+    currentUser.value = member
     unlocked.value = true
     passwordError.value = false
+    showMemberSelect.value = false
+    logActivity('Logged in')
     fetchCareers()
   } else {
     passwordError.value = true
   }
 }
+
+function logout() {
+  logActivity('Logged out')
+  currentUser.value = null
+  unlocked.value = false
+  showMemberSelect.value = true
+  selectedMember.value = ''
+  passwordInput.value = ''
+  passwordError.value = false
+}
+
+function goBack() {
+  showMemberSelect.value = true
+  passwordInput.value = ''
+  passwordError.value = false
+}
+
+const isSuperAdmin = computed(() => currentUser.value?.role === 'superadmin')
 
 function notify(type, message) {
   notification.show = true
@@ -152,6 +205,7 @@ async function saveCareer() {
       return
     }
 
+    logActivity(editingId.value ? `Updated career: ${form.name}` : `Created career: ${form.name}`)
     notify('success', editingId.value ? 'Career updated.' : 'Career created.')
     closeForm()
     await fetchCareers()
@@ -162,7 +216,7 @@ async function saveCareer() {
   }
 }
 
-async function deleteCareer(id) {
+async function deleteCareer(id, name) {
   deleting.value = id
   try {
     const res = await fetch(`${API}/careers/${id}`, { method: 'DELETE' })
@@ -171,6 +225,7 @@ async function deleteCareer(id) {
       notify('error', json.message || 'Failed to delete career.')
       return
     }
+    logActivity(`Deleted career: ${name}`)
     notify('success', 'Career deleted.')
     await fetchCareers()
   } catch {
@@ -182,7 +237,7 @@ async function deleteCareer(id) {
 
 function confirmDelete(id, name) {
   if (window.confirm(`Delete "${name}"? This cannot be undone.`)) {
-    deleteCareer(id)
+    deleteCareer(id, name)
   }
 }
 
@@ -194,30 +249,61 @@ onMounted(() => {})
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
       <div v-if="!unlocked" class="max-w-md mx-auto mt-20">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm text-center">
-          <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div class="text-center mb-6">
+            <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Dashboard Access</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Select your name and enter your password.</p>
           </div>
-          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Dashboard Access</h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Enter the team password to manage careers.</p>
-          <form @submit.prevent="checkPassword" class="space-y-4">
-            <input
-              v-model="passwordInput"
-              type="password"
-              placeholder="Enter password"
-              class="w-full px-4 py-3 text-sm bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all text-center"
-              :class="passwordError ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-primary-400 focus:ring-primary-100'"
-            />
-            <p v-if="passwordError" class="text-xs text-red-500 -mt-2">Incorrect password. Try again.</p>
-            <button
-              type="submit"
-              class="w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all"
-            >
-              Unlock Dashboard
-            </button>
-          </form>
+
+          <div v-if="showMemberSelect">
+            <form @submit.prevent="selectMember" class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">Team Member</label>
+                <select
+                  v-model="selectedMember"
+                  class="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                >
+                  <option value="" disabled>Select your name</option>
+                  <option v-for="m in TEAM_MEMBERS" :key="m.name" :value="m.name">{{ m.name }}</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                :disabled="!selectedMember"
+                class="w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all disabled:opacity-50"
+              >
+                Continue
+              </button>
+            </form>
+          </div>
+
+          <div v-else>
+            <div class="flex items-center gap-2 mb-4 text-sm text-gray-500 dark:text-gray-400">
+              <button @click="goBack" class="hover:text-primary-600 transition-colors">&larr; Change</button>
+              <span class="font-medium text-gray-700 dark:text-gray-200">{{ selectedMember }}</span>
+            </div>
+            <form @submit.prevent="checkPassword" class="space-y-4">
+              <input
+                v-model="passwordInput"
+                type="password"
+                placeholder="Enter your password"
+                class="w-full px-4 py-3 text-sm bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all text-center"
+                :class="passwordError ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-primary-400 focus:ring-primary-100'"
+              />
+              <p v-if="passwordError" class="text-xs text-red-500 -mt-2">Incorrect password. Try again.</p>
+              <button
+                type="submit"
+                class="w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all"
+              >
+                Unlock Dashboard
+              </button>
+            </form>
+          </div>
         </div>
       </div>
 
@@ -236,18 +322,64 @@ onMounted(() => {})
         </div>
       </div>
 
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-6">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p class="text-gray-500 dark:text-gray-400 mt-1">Manage careers, opportunities, and descriptions.</p>
+          <div class="flex items-center gap-3 mb-1">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <span class="px-3 py-1 text-xs font-semibold rounded-lg" :class="isSuperAdmin ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300'">
+              {{ isSuperAdmin ? 'Super Admin' : 'Team Member' }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Logged in as <strong>{{ currentUser?.name }}</strong></p>
         </div>
-        <button
-          @click="openAddForm"
-          class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 shadow-md shadow-primary-200 hover:shadow-lg hover:shadow-primary-300 transition-all duration-200 flex items-center gap-2"
-        >
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add Career
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            v-if="isSuperAdmin"
+            @click="showActivity = !showActivity"
+            class="px-4 py-2.5 text-sm font-medium rounded-xl border transition-all"
+            :class="showActivity ? 'bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-900/30 dark:border-purple-700 dark:text-purple-300' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400'"
+          >
+            <span class="flex items-center gap-1.5">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              Activity
+            </span>
+          </button>
+          <button
+            @click="openAddForm"
+            class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 shadow-md shadow-primary-200 hover:shadow-lg hover:shadow-primary-300 transition-all duration-200 flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Career
+          </button>
+          <button @click="logout" class="p-2.5 rounded-xl text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors dark:hover:bg-red-900/30" title="Logout">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div v-if="isSuperAdmin && showActivity" class="mb-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+          <h3 class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Team Activity Log
+          </h3>
+          <button @click="activities = []; localStorage.removeItem('mycareer_activities')" class="text-xs text-red-500 hover:text-red-700 font-medium">Clear All</button>
+        </div>
+        <div class="max-h-64 overflow-y-auto">
+          <div v-if="activities.length === 0" class="px-6 py-8 text-center text-sm text-gray-400">No activity recorded yet.</div>
+          <div v-for="(act, i) in activities" :key="i" class="flex items-start gap-3 px-6 py-3 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              {{ act.member.split(' ').map(w => w[0]).slice(0, 2).join('') }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-700 dark:text-gray-300">
+                <strong>{{ act.member }}</strong>
+                <span class="text-gray-500"> {{ act.action }}</span>
+              </p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ new Date(act.timestamp).toLocaleString() }}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-if="loading" class="flex items-center justify-center py-20">
