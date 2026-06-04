@@ -172,13 +172,7 @@ const stats = [
             View Open Positions
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <router-link
-            to="/dashboard"
-            class="inline-flex items-center gap-2 px-8 py-3.5 bg-primary-800/50 text-white font-semibold rounded-xl border border-white/20 hover:bg-primary-800/70 hover:border-white/30 shadow-lg transition-all w-full sm:w-auto justify-center"
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            Dashboard
-          </router-link>
+
         </div>
       </div>
     </section>
