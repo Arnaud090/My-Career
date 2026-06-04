@@ -1,7 +1,7 @@
 <script setup>
 import { ref, nextTick, onMounted } from 'vue'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_URL = import.meta.env.VITE_API_URL || '/api'
 
 const messages = ref([])
 const input = ref('')
@@ -63,7 +63,7 @@ async function sendMessage(text) {
       currentSuggestions.value = defaultSuggestions
     }
   } catch {
-    addMessage('assistant', renderMarkdown(`I'm having trouble connecting to the server. Please make sure the backend is running and try again.`), true)
+    addMessage('assistant', renderMarkdown(`I'm having trouble connecting to the career guidance service. Please try again.`), true)
     currentSuggestions.value = defaultSuggestions
   }
 

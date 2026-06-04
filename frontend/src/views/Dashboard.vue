@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API = import.meta.env.VITE_API_URL || '/api'
 
 const careers = ref([])
 const loading = ref(false)
