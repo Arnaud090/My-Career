@@ -238,19 +238,19 @@ onMounted(() => {
           </router-link>
         </div>
 
-        <div class="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl shadow-black/20">
+        <div class="bg-white/95 backdrop-blur-lg rounded-2xl p-8 shadow-2xl shadow-black/20 dark:bg-gray-800/95">
           <div class="text-center mb-6">
             <div class="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary-600 to-primary-800 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-200">
               <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 21V9l8-5 8 5v12"/><path d="M4 21h16"/><path d="M12 21v-8"/><path d="M8 13h8"/><path d="M10 9l2-2 2 2"/>
               </svg>
             </div>
-            <h2 class="text-xl font-bold text-gray-900">Admin Dashboard</h2>
-            <p class="text-sm text-gray-500 mt-1">Select your name and enter your password to continue.</p>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Select your name and enter your password to continue.</p>
           </div>
           <div v-if="showMemberSelect">
             <form @submit.prevent="selectMember" class="space-y-4">
-              <select v-model="selectedMember" class="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100">
+              <select v-model="selectedMember" class="w-full px-4 py-3 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
                 <option value="" disabled>Select your name</option>
                 <option v-for="m in TEAM_MEMBERS" :key="m.name" :value="m.name">{{ m.name }}</option>
               </select>
@@ -258,13 +258,13 @@ onMounted(() => {
             </form>
           </div>
           <div v-else>
-            <div class="flex items-center gap-2 mb-4 text-sm text-gray-500">
+            <div class="flex items-center gap-2 mb-4 text-sm text-gray-500 dark:text-gray-400">
               <button @click="goBack" class="hover:text-primary-600 transition-colors">&larr; Change</button>
-              <span class="font-medium text-gray-700">{{ selectedMember }}</span>
+              <span class="font-medium text-gray-700 dark:text-gray-200">{{ selectedMember }}</span>
             </div>
             <form @submit.prevent="checkPassword" class="space-y-4">
               <input v-model="passwordInput" type="password" placeholder="Enter your password"
-                class="w-full px-4 py-3 text-sm bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all text-center"
+                class="w-full px-4 py-3 text-sm bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all text-center dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                 :class="passwordError ? 'border-red-300 focus:border-red-400 focus:ring-red-100' : 'border-gray-200 focus:border-primary-400 focus:ring-primary-100'" />
               <p v-if="passwordError" class="text-xs text-red-500 -mt-2">Incorrect password. Try again.</p>
               <button type="submit" class="w-full px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all">Unlock Dashboard</button>

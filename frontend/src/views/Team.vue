@@ -14,6 +14,7 @@ const teamMembers = [
     initials: 'ME',
     color: 'from-blue-500 to-indigo-600',
     description: 'Skilled backend developer focused on building scalable APIs and robust server-side architecture to power the platform\'s features.',
+    website: 'https://elie-first.netlify.app',
   },
   {
     name: 'Shyaka Tresor',
