@@ -26,6 +26,7 @@ const teamMembers = [
     initials: 'ST',
     color: 'from-emerald-500 to-teal-600',
     description: 'Talented frontend developer crafting intuitive, responsive user interfaces with modern frameworks for a seamless user experience.',
+    website: 'https://shyakatresorportifolio.netlify.app',
   },
   {
     name: 'Abakundanye Bruno',
