@@ -172,20 +172,24 @@ function toggleTheme() {
 const totalSkills = computed(() => careers.value.reduce((s, c) => s + (c.technicalSkills?.length || 0) + (c.softSkills?.length || 0), 0))
 const totalOpportunities = computed(() => careers.value.reduce((s, c) => s + (c.careerOpportunities?.length || 0), 0))
 
-const sidebarItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'grid' },
-  { id: 'users', label: 'Users', icon: 'users' },
-  { id: 'careers', label: 'Careers', icon: 'briefcase' },
-  { id: 'addcareer', label: 'Add Career', icon: 'plus' },
-  { id: 'analytics', label: 'Career Analytics', icon: 'chart' },
-  { id: 'requests', label: 'Career Requests', icon: 'inbox' },
-  { id: 'subjects', label: 'Subject Combinations', icon: 'book' },
-  { id: 'aianalytics', label: 'AI Analytics', icon: 'cpu' },
-  { id: 'feedback', label: 'Feedback', icon: 'message' },
-  { id: 'announcements', label: 'Announcements', icon: 'megaphone' },
-  { id: 'settings', label: 'Settings', icon: 'settings' },
-  { id: 'logout', label: 'Logout', icon: 'logout' },
-]
+const sidebarItems = computed(() => {
+  const all = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'grid' },
+    { id: 'users', label: 'Users', icon: 'users' },
+    { id: 'careers', label: 'Careers', icon: 'briefcase' },
+    { id: 'addcareer', label: 'Add Career', icon: 'plus' },
+    { id: 'analytics', label: 'Career Analytics', icon: 'chart' },
+    { id: 'requests', label: 'Career Requests', icon: 'inbox' },
+    { id: 'subjects', label: 'Subject Combinations', icon: 'book' },
+    { id: 'aianalytics', label: 'AI Analytics', icon: 'cpu' },
+    { id: 'feedback', label: 'Feedback', icon: 'message' },
+    { id: 'announcements', label: 'Announcements', icon: 'megaphone' },
+    { id: 'settings', label: 'Settings', icon: 'settings' },
+    { id: 'logout', label: 'Logout', icon: 'logout' },
+  ]
+  if (isSuperAdmin.value) return all
+  return all.filter(i => ['dashboard', 'careers', 'addcareer', 'announcements', 'logout'].includes(i.id))
+})
 
 const sidebarIcons = {
   grid: 'M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z',
