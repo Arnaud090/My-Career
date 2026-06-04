@@ -10,7 +10,7 @@ const teamMembers = [
     initials: 'IS',
     color: 'from-primary-500 to-purple-600',
     description: 'Visionary leader driving the project forward with expertise in full-stack development and a passion for leveraging technology to solve real-world problems.',
-    website: 'https://arnaud-00.netlify.app/',
+    website: 'https://portifolio-gamma-gray-74.vercel.app',
   },
   {
     name: 'Muganwa Elie',
