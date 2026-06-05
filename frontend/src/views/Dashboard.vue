@@ -3,13 +3,67 @@ import { ref, reactive, onMounted, computed } from 'vue'
 
 const API = import.meta.env.VITE_API_URL || '/api'
 
-const TEAM_MEMBERS = [
+const DEFAULT_MEMBERS = [
   { name: 'IRANZI SANGWA Arnaud', password: 'admin123', role: 'superadmin' },
   { name: 'Muganwa Elie', password: 'elie2024', role: 'member' },
   { name: 'Shyaka Tresor', password: 'tresor2024', role: 'member' },
   { name: 'Abakundanye Bruno', password: 'bruno2024', role: 'member' },
   { name: 'Gakuba Landry', password: 'landry2024', role: 'member' },
 ]
+
+const TEAM_MEMBERS = ref(loadMembers())
+
+function loadMembers() {
+  const saved = localStorage.getItem('mycareer_team_members')
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.some(m => m.role === 'superadmin')) return parsed
+    } catch {}
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_MEMBERS))
+}
+
+function saveMembers() {
+  localStorage.setItem('mycareer_team_members', JSON.stringify(TEAM_MEMBERS.value))
+}
+
+const newMemberName = ref('')
+const newMemberPassword = ref('')
+const showAddMember = ref(false)
+const removeConfirm = ref(null)
+
+function addMember() {
+  if (!newMemberName.value.trim() || !newMemberPassword.value.trim()) return
+  TEAM_MEMBERS.value.push({
+    name: newMemberName.value.trim(),
+    password: newMemberPassword.value.trim(),
+    role: 'member',
+  })
+  saveMembers()
+  newMemberName.value = ''
+  newMemberPassword.value = ''
+  showAddMember.value = false
+  logActivity(`Added member: ${newMemberName.value.trim()}`)
+  notify('success', `Member "${newMemberName.value.trim()}" added.`)
+}
+
+function confirmRemoveMember(name) {
+  removeConfirm.value = name
+}
+
+function cancelRemoveMember() {
+  removeConfirm.value = null
+}
+
+function removeMember(name) {
+  if (name === currentUser.value?.name) return
+  TEAM_MEMBERS.value = TEAM_MEMBERS.value.filter(m => m.name !== name)
+  saveMembers()
+  removeConfirm.value = null
+  logActivity(`Removed member: ${name}`)
+  notify('success', `Member "${name}" removed.`)
+}
 
 const activities = ref(JSON.parse(localStorage.getItem('mycareer_activities') || '[]'))
 function logActivity(action) {
@@ -90,7 +144,7 @@ function selectMember() {
   if (selectedMember.value) { showMemberSelect.value = false; passwordError.value = false }
 }
 function checkPassword() {
-  const member = TEAM_MEMBERS.find(m => m.name === selectedMember.value)
+  const member = TEAM_MEMBERS.value.find(m => m.name === selectedMember.value)
   if (member && passwordInput.value === member.password) {
     currentUser.value = member; unlocked.value = true; passwordError.value = false
     showMemberSelect.value = false; logActivity('Logged in'); fetchCareers()
@@ -395,6 +449,22 @@ onMounted(() => {
 
           <!-- ==================== USERS ==================== -->
           <div v-if="activeSection === 'users'" class="space-y-4">
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ TEAM_MEMBERS.length }} member(s)</p>
+              <button v-if="isSuperAdmin" @click="showAddMember = !showAddMember" class="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all">
+                {{ showAddMember ? 'Cancel' : '+ Add Member' }}
+              </button>
+            </div>
+
+            <div v-if="showAddMember && isSuperAdmin" class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Add New Member</h3>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <input v-model="newMemberName" type="text" placeholder="Full name" class="flex-1 px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" />
+                <input v-model="newMemberPassword" type="text" placeholder="Password" class="flex-1 px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" />
+                <button @click="addMember" :disabled="!newMemberName.trim() || !newMemberPassword.trim()" class="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 transition-all">Add</button>
+              </div>
+            </div>
+
             <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
               <table class="w-full text-sm">
                 <thead>
@@ -402,6 +472,7 @@ onMounted(() => {
                     <th class="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300">Name</th>
                     <th class="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300">Role</th>
                     <th class="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                    <th v-if="isSuperAdmin" class="px-6 py-3 font-semibold text-gray-700 dark:text-gray-300 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -417,6 +488,16 @@ onMounted(() => {
                       <span class="flex items-center gap-1.5 text-xs text-emerald-600">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
                       </span>
+                    </td>
+                    <td v-if="isSuperAdmin && m.role !== 'superadmin'" class="px-6 py-4 text-right">
+                      <div v-if="removeConfirm === m.name" class="flex items-center justify-end gap-2">
+                        <span class="text-xs text-red-600 font-medium">Remove?</span>
+                        <button @click="removeMember(m.name)" class="px-2.5 py-1 text-xs font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">Yes</button>
+                        <button @click="cancelRemoveMember" class="px-2.5 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors dark:bg-gray-700 dark:text-gray-300">No</button>
+                      </div>
+                      <button v-else @click="confirmRemoveMember(m.name)" class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors dark:hover:text-red-400 dark:hover:bg-red-900/30" title="Remove member">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
                     </td>
                   </tr>
                 </tbody>
